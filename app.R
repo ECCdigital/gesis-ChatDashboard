@@ -106,8 +106,8 @@ Colnames_exclude_pii <- c("Sender",
 
 
 # Shiny Debugging Options (uncomment these to debug the app)
-# options(shiny.error = browser)
-# options(shiny.trace = TRUE)
+options(shiny.error = browser)
+options(shiny.trace = TRUE)
 
 
 
