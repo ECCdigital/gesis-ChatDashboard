@@ -65,7 +65,7 @@ use_forwarding <- FALSE
 # TODO: Set this as a character string in line 880
 
 # saving donated files to server if TRUE, will not save any data if not TRUE
-save_to_server <- TRUE
+save_to_server <- FALSE
 
 # setting upload file size limit
 options(shiny.maxRequestSize = 50*1024^2)
