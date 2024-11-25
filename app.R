@@ -30,7 +30,7 @@ library(WhatsR)
 
 # language setting for shinymanager authentication page
 # see: https://datastorm-open.github.io/shinymanager/reference/use_language.html
-landing_page_language <- "en"
+landing_page_language <- Sys.getenv("LANGUAGE", "en")
 
 # Check: https://cdn.datatables.net/plug-ins/1.10.11/i18n/ for a 
 # list of different languages. Insert them by pasting the respective
@@ -59,13 +59,13 @@ consent_message <- NA
 # variable to control whether to use forwarding per url parameter or rely on pre-defined credentials for authentication
 # TODO: If you are using url parameter forwarding, you need to adapt line 879 to extract the participant ID from your referral link.
 # Default structure is: www.example-website.com/ChatDashboard?id=TestParticipant | Extracts: TestParticipant
-use_forwarding <- FALSE
+use_forwarding <- Sys.getenv("USE_FORWARDING", FALSE)
 
 # Password to use for forwarding via url-parameter (only used if use_forwarding == TRUE)
 # TODO: Set this as a character string in line 880
 
 # saving donated files to server if TRUE, will not save any data if not TRUE
-save_to_server <- FALSE
+save_to_server <- Sys.getenv("SAVE_TO_SERVER", FALSE)
 
 # setting upload file size limit
 options(shiny.maxRequestSize = 50*1024^2)
@@ -116,8 +116,8 @@ options(shiny.trace = TRUE)
 ################################### HANDLING SHINY MANAGER CREDENTILAS ####
 
 # Switch for running local (FALSE) vs online (TRUE)
-running_online <- FALSE
-if (running_online == TRUE) {.libPaths("YOUR-LIB-PATH-HERE")}
+running_online <- Sys.getenv("RUNNING_ONLINE", FALSE)
+if (running_online == TRUE) {.libPaths(Sys.getenv("R_LIBS_USER"))}
 # TODO: Add library path of server here if running online
 
 # loading credentials from external file
@@ -874,7 +874,7 @@ server <- function(input, output, session) {
                                                              # survey tool can be used as  valid usernames. This enables data linking.
                                                              # TODO: Might need to be adapted to the structure of the referral link.
                                                               c(unlist(strsplit(strsplit(session$clientData$url_search,"&")[[1]][1],"="))[2],
-                                                                "password", # TODO: Set your forwarding password here!
+                                                                Sys.getenv("FORWARDING_PASSWORD", "password"),
                                                                 "2019-04-15",
                                                                 NA,
                                                                 FALSE,
