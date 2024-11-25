@@ -116,7 +116,7 @@ options(shiny.trace = TRUE)
 ################################### HANDLING SHINY MANAGER CREDENTILAS ####
 
 # Switch for running local (FALSE) vs online (TRUE)
-running_online = FALSE
+running_online <- FALSE
 if (running_online == TRUE) {.libPaths("YOUR-LIB-PATH-HERE")}
 # TODO: Add library path of server here if running online
 
