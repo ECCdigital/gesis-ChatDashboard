@@ -864,6 +864,11 @@ server <- function(input, output, session) {
 
   # authentication either with url parameter forwarding or with preset credentials
   if (use_forwarding == TRUE) {
+
+    observe({
+      participant_id <- unlist(strsplit(strsplit(session$clientData$url_search, "&")[[1]][1], "="))[2]
+      print(paste("Extracted participant ID:", participant_id))
+    })
     
     # using manually set password for forwarding
     res_auth <- secure_server(
