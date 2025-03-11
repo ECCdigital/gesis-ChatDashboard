@@ -162,6 +162,28 @@ waiting_screen2 <- tagList(
 # Define UI for ChatDashboard application
 ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
 
+                tags$head(
+                  HTML(sprintf("
+                    <!-- etracker code 6.0 -->
+                    <script type='text/javascript'>
+                       var et_pagename = '%s';
+                       var et_areas    = '%s';
+                    </script>
+                    <script id='_etLoader'
+                            type='text/javascript'
+                            charset='UTF-8'
+                            data-block-cookies='true'
+                            data-secure-code='%s'
+                            src='//code.etracker.com/code/e.js'
+                            async>
+                    </script>
+                    <!-- etracker code 6.0 end -->
+                    ",
+                     Sys.getenv('ET_PAGENAME'),
+                     Sys.getenv('ET_AREAS'),
+                     Sys.getenv('ET_SECURE_CODE')
+                  ))
+                ),
 ##################################### UI SETUP ####
 
                 ### Setting up shiny JS and shinyAlert
