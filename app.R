@@ -30,18 +30,19 @@ library(WhatsR)
 
 # language setting for shinymanager authentication page
 # see: https://datastorm-open.github.io/shinymanager/reference/use_language.html
+
 landing_page_language <- Sys.getenv("LANGUAGE", unset = "en")
 
 # Check: https://cdn.datatables.net/plug-ins/1.10.11/i18n/ for a 
 # list of different languages. Insert them by pasting the respective
 # link according to the format below
-datatable_language <- c('//cdn.datatables.net/plug-ins/1.10.11/i18n/English.json')
+datatable_language <- c('//cdn.datatables.net/plug-ins/1.10.11/i18n/German.json')
 
 # import display text from csv file
 ChatDashboard_DisplayText <- read.csv("./www/ChatDashboard_DisplayText.csv")
 
 # Selecting column containing the text you want to display. English and German are preset options 
-display_text <- ChatDashboard_DisplayText$English
+display_text <- ChatDashboard_DisplayText$German
 
 # For changing the display of individual text variables, you can simply edit the file
 # ./www/ChatDashboard_DisplayText.csv, add an additional column, and select it above.
@@ -160,7 +161,7 @@ waiting_screen2 <- tagList(
 ###################################################################################### SHINY SERVER UI #####
 
 # Define UI for ChatDashboard application
-ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
+ui <- fluidPage(theme  = shinytheme("flatly"),
 
                 tags$head(
                   HTML(sprintf("
@@ -204,6 +205,22 @@ ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
                             }'
                 ),
 
+                # Setting up the exit intent modal    
+                tags$head(tags$script(HTML("
+                  window.modalOpen=false; let cooldown=false; window.stopExitIntent=false;
+                  document.addEventListener('mouseout', function(e){
+                    if (window.modalOpen || cooldown || window.stopExitIntent) return;
+                    if (!e.relatedTarget && e.clientY <= 0) {
+                      if (typeof Shiny !== 'undefined') {
+                        Shiny.setInputValue('exit_intent', Date.now(), {priority:'event'});
+                        window.modalOpen=true; cooldown=true; setTimeout(()=>cooldown=false, 3000);
+                      }
+                    }
+                  }, {passive:true});
+                "))),
+
+
+
 ##################################### MAIN UI ####
 
                 # Logo and App name in navbar page
@@ -211,6 +228,7 @@ ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
                                             width = 35,
                                             src = "WhatsR_logo.png"),
                            id = "ChatDashboard",
+                           windowTitle = "ChatDashboard",
 
 ##################################### Overview Page ####
                            tabPanel(display_text[3],
@@ -291,7 +309,7 @@ ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
                                         # File selection field
                                         fileInput(inputId = "file",
                                                   label = "",
-                                                  accept = ".txt",
+                                                  accept = c(".txt", ".zip"),
                                                   buttonLabel = display_text[20]
                                                   ),
 
@@ -355,16 +373,14 @@ ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
                                      
                                      # Info text
                                      h2(display_text[87], align = "center"),
-                                     HTML("To link your survey responses to your anonymous chatting behavior, please indicate which person from the chat
-                                          filled in the survey. We show the real sender names here so you can select the correct anoynmous indicator but real names will not be saved."),
-                                     # TODO: Add text to file
+                                     HTML(display_text[90]),
                                      
                                      # spacer
                                      HTML("<br><br>"),
                                      
                                     # input selector
                                      selectInput("person_select",
-                                                 label = "Which anonymous person from the chat answered the survey?", # TODO: Add text to file
+                                                 label = display_text[91],
                                                  choices = c(""),
                                                  selected = "",
                                                  multiple = FALSE),
@@ -372,7 +388,7 @@ ui <- fluidPage(theme  = shinytheme("flatly"), window_title = "ChatDashboard",
                                      
                                      # action button
                                      actionButton("person_submit",
-                                                  "Weiter", # TODO: Add text to file
+                                                  display_text[89],
                                                   style = "color: #040607; background-color: #25D366; border-color: #040607"),
                                    ),
                                    
@@ -867,6 +883,71 @@ server <- function(input, output, session) {
 
   # creating empty reactive value for storing uploaded data
   rv <- reactiveValues(data = NULL)
+  
+  # Ask "reason to leave question"
+  # Exit-intent questionnaire (multi-select, random order; CSV named with ID+timestamp)
+  base_reasons <- c(display_text[92],display_text[93],display_text[94],display_text[95])
+  other_label  <- display_text[96]
+  
+  observeEvent(input$exit_intent, {
+    choices <- c(sample(base_reasons), other_label)
+    showModal(modalDialog(
+      title = display_text[97],
+      tags$p(display_text[98]),
+      tags$p(display_text[99]),
+      checkboxGroupInput("reasons", NULL, choices = choices, selected = character(0)),
+      conditionalPanel(
+        paste0("input.reasons && input.reasons.includes('", other_label, "')"),
+        textAreaInput("reason_free", NULL, placeholder = "Freitext", width = "100%", height = "120px")
+      ),
+      footer = tagList(
+        actionButton("reason_cancel", display_text[100]),
+        actionButton("reason_submit",display_text[101], class = "btn-primary")
+      ),
+      easyClose = FALSE
+    ))
+    shinyjs::disable("reason_submit")
+  })
+  
+  # enable submit only when valid
+  observe({
+    sel <- if (is.null(input$reasons)) character(0) else input$reasons
+    need_free <- other_label %in% sel
+    ok <- length(sel) > 0 && (!need_free || nzchar(if (is.null(input$reason_free)) "" else input$reason_free))
+    if (ok) shinyjs::enable("reason_submit") else shinyjs::disable("reason_submit")
+  })
+  
+  observeEvent(input$reason_cancel, {
+    removeModal()
+    shinyjs::runjs("window.modalOpen=false;") # allow re-fire later
+  })
+  
+  observeEvent(input$reason_submit, {
+    sel <- req(input$reasons)
+    
+    # Always use shinymanager username; make it OS-safe
+    id_raw <- tryCatch(reactiveValuesToList(res_auth)$user, error = function(e) "")
+    pid    <- if (nzchar(id_raw)) gsub("[^A-Za-z0-9_-]", "_", id_raw) else "UNKNOWN"
+    
+    ts     <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
+    outdir <- "./UserData/ClosingReasons"
+    dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+    csv_fn <- file.path(outdir, sprintf("CLOSING_REASONS_%s_%s.csv", pid, ts))
+    
+    other_txt <- if (other_label %in% sel) gsub("[\r\n]+"," ", input$reason_free %||% "") else ""
+    
+    row <- data.frame(ID = pid, timestamp = ts, other_reason = other_txt, check.names = FALSE)
+    for (r in base_reasons) row[[r]] <- as.integer(r %in% sel)
+    row[[other_label]] <- as.integer(other_label %in% sel)
+    
+    write.csv(row, file = csv_fn, row.names = FALSE, fileEncoding = "UTF-8")
+    
+    removeModal()
+    shinyjs::runjs("window.stopExitIntent=true; window.modalOpen=false; window.armExit=false;") # never refire after one answer
+  })
+  
+  
+  
 
   ################################### STYLING, BUTTONS, HIDE/UNHIDE ELEMENTS ####
 
@@ -974,6 +1055,7 @@ server <- function(input, output, session) {
                                                              # to the credentials file, ensuring that participant IDs generated by your
                                                              # survey tool can be used as  valid usernames. This enables data linking.
                                                              # TODO: Might need to be adapted to the structure of the referral link.
+
                                                               c(unlist(strsplit(strsplit(session$clientData$url_search,"&")[[1]][1],"="))[2],
                                                                 Sys.getenv("FORWARDING_PASSWORD", unset = "password"),
                                                                 "2019-04-15",
@@ -1040,7 +1122,7 @@ server <- function(input, output, session) {
     rv$copy[,13][rv$copy[,13] == "NA"] <- NA
     rv$copy[,14][rv$copy[,14] == "NA"] <- NA
     rv$copy[,15][rv$copy[,15] == "NA"] <- NA
-
+    
     # hide waiting animation
     waiter_hide()
 
@@ -1085,7 +1167,7 @@ server <- function(input, output, session) {
       if (length(color_identifier) > 0) {datatable(rv$copy[,c(input$show_vars)],
                                                    options = list(scrollY = "750px",
                                                                   scrollX = TRUE,
-                                                                  ordering = F,
+                                                                  ordering = FALSE,
                                                                   language = list(url = datatable_language)
                                                                   
                                                                   ,columnDefs = list(list(
@@ -1246,7 +1328,7 @@ server <- function(input, output, session) {
                    closeOnEsc = FALSE,
                    closeOnClickOutside = FALSE,
                    inputId = "autoremoveAlert")
-
+      
 
       } else {
 
@@ -1268,7 +1350,11 @@ server <- function(input, output, session) {
       attr(rv$copy2, "detectedOS")  <- attributes(rv$copy)["detectedOS"]
 
       # hashing to get a unique filename to not overwrite a file if the same person decides to upload multiple chats
-      LocalFilename <- sprintf("%s_%s_%s.rds",reactiveValuesToList(res_auth)$user,gsub(" ","_",Sys.time()), digest(rv$copy2,algo = "sha512"))
+      LocalFilename <- sprintf("%s_%s_%s.rds",
+                               reactiveValuesToList(res_auth)$user,
+                               format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),   # safe for all OS
+                               digest(rv$copy2, algo = "sha512")
+      )
 
       # creating server keypair object from stored RSA keys
       key_pair_Server <- cyphr::keypair_openssl(pub = "./ServerFolder", key = "./ServerFolder", envelope = TRUE)
@@ -1292,6 +1378,9 @@ server <- function(input, output, session) {
       rv$copy2 <- NULL
       rv$copy2_encrypted <- NULL
 
+      # disable leave question after successfull donation
+      shinyjs::runjs("window.stopExitIntent = true; window.modalOpen=false;")
+      
       # routing to results tab and hiding explore data tab
       showTab("ChatDashboard",display_text[46],session = session)
       hideTab("ChatDashboard",display_text[28],session = session)
@@ -1302,7 +1391,8 @@ server <- function(input, output, session) {
 
     }
 
-  })
+  } # , ignoreInit = TRUE, once = TRUE # Prevents running the flow twice if people manage to doubleclick before the spinner loads # TODO: TEST THIS
+  )
 
 
 
@@ -1458,7 +1548,7 @@ server <- function(input, output, session) {
       plot_messages(rv$data,
                     names = input$Sender_input_msg,
                     starttime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[1]," 00:00", sep = ""),
-                    endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 00:00", sep = ""))},
+                    endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 23:59", sep = ""))},
       res = 100, height = 600)
 
 
@@ -1469,7 +1559,7 @@ server <- function(input, output, session) {
       plot_tokens(rv$data,
                   names = input$Sender_input_msg,
                   starttime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[1]," 00:00"),
-                  endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 00:00"),
+                  endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 23:59"),
                   plot = "cumsum")},
       res = 100, height = 600)
 
@@ -1481,7 +1571,7 @@ server <- function(input, output, session) {
       plot_tokens_over_time(rv$data,
                             names = input$Sender_input_msg,
                             starttime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[1]," 00:00"),
-                            endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 00:00"),
+                            endtime = paste(unlist(strsplit(format.Date(input$date_range_messages,"%Y-%m-%d")," "))[2]," 23:59"),
                             plot = "heatmap")},
       res = 100, height = 600)
 
@@ -1498,7 +1588,7 @@ server <- function(input, output, session) {
                  plot = "cumsum",
                  names = input$Sender_input_links,
                  starttime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[1]," 00:00"),
-                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 00:00"),
+                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 23:59"),
                  min_occur = input$LinkMinimum)},
       res = 100, height = 600)
 
@@ -1510,7 +1600,7 @@ server <- function(input, output, session) {
                  plot = "heatmap",
                  names = input$Sender_input_links,
                  starttime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[1]," 00:00"),
-                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 00:00"),
+                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 23:59"),
                  min_occur = input$LinkMinimum)},
       res = 100, height = 600)
 
@@ -1522,7 +1612,7 @@ server <- function(input, output, session) {
                  plot = "splitbar",
                  names = input$Sender_input_links,
                  starttime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[1]," 00:00"),
-                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 00:00"),
+                 endtime = paste(unlist(strsplit(format.Date(input$date_range_links,"%Y-%m-%d")," "))[2]," 23:59"),
                  min_occur = input$LinkMinimum)},
       res = 100, height = 600)
 
@@ -1539,7 +1629,7 @@ server <- function(input, output, session) {
                    plot = "cumsum",
                    names = input$Sender_input_smilies,
                    starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[1]," 00:00"),
-                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 00:00"),
+                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 23:59"),
                    min_occur = input$SmilieMinimum)},
       res = 100, height = 600)
 
@@ -1551,7 +1641,7 @@ server <- function(input, output, session) {
                    plot = "heatmap",
                    names = input$Sender_input_smilies,
                    starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[1]," 00:00"),
-                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 00:00"),
+                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 23:59"),
                    min_occur = input$SmilieMinimum)},
       res = 100, height = 600)
 
@@ -1564,7 +1654,7 @@ server <- function(input, output, session) {
                    plot = "splitbar",
                    names = input$Sender_input_smilies,
                    starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[1]," 00:00"),
-                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 00:00"),
+                   endtime = paste(unlist(strsplit(format.Date(input$date_range_smilies,"%Y-%m-%d")," "))[2]," 23:59"),
                    min_occur = input$SmilieMinimum)},
       res = 100, height = 600)
 
@@ -1581,7 +1671,7 @@ server <- function(input, output, session) {
                  plot = "cumsum",
                  names = input$Sender_input_emoji,
                  starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[1]," 00:00"),
-                 endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 00:00"),
+                 endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 23:59"),
                  min_occur = input$EmojiMinimum)},
       res = 100, height = 600)
 
@@ -1593,7 +1683,7 @@ server <- function(input, output, session) {
                   plot = "heatmap",
                   names = input$Sender_input_emoji,
                   starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[1]," 00:00"),
-                  endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 00:00"),
+                  endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 23:59"),
                   min_occur = input$EmojiMinimum)},
       res = 100, height = 600)
 
@@ -1605,7 +1695,7 @@ server <- function(input, output, session) {
                  plot = "splitbar",
                  names = input$Sender_input_emoji,
                  starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[1]," 00:00"),
-                 endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 00:00"),
+                 endtime = paste(unlist(strsplit(format.Date(input$date_range_emoji,"%Y-%m-%d")," "))[2]," 23:59"),
                  min_occur = input$EmojiMinimum)},
       res = 100, height = 600)
 
@@ -1623,7 +1713,7 @@ server <- function(input, output, session) {
                       type = "replytime",
                       names = input$Sender_input_replies,
                       starttime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[1]," 00:00"),
-                      endtime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[2]," 00:00"))},
+                      endtime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[2]," 23:59"))},
       res = 100, height = 600)
 
     # Rendering replies plot 2
@@ -1633,7 +1723,7 @@ server <- function(input, output, session) {
                       type = "reactiontime",
                       names = input$Sender_input_replies,
                       starttime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[1]," 00:00"),
-                      endtime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[2]," 00:00"))},
+                      endtime = paste(unlist(strsplit(format.Date(input$date_range_replies,"%Y-%m-%d")," "))[2]," 23:59"))},
       res = 100, height = 600)
 
   })
