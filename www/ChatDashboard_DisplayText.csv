@@ -117,15 +117,24 @@ You can set the senders, the minimum frequency of a smilie, and the timeframe fo
 75,NA,"Auf der rechten Seite sehen Sie, wie lange es dauert, bis jeder Person in Ihrem Chat geantwortet wird oder wie lange es dauert, bis diese auf eine Nachricht antwortet. In diesem
                                                                              Panel können Sie die Einstellungen für die Grafik auf der rechten Seite anpassen.Sie können die Absender, die Mindestanzahl und den Zeitrahmen, der in die Analyse einbezogen werden soll, festlegen.","On the right-hand side, you can see how long it takes for each person in your chat to respond or how long it takes for them to reply to a message. You can set the senders and the timeframe for the analysis."
 76,NA,Impressum,Impressum
-77,NA,"Vorname Nachname, <br>
-Institution, <br>
-Adresszeile 1, <br>
-Adresszeile 2, <br>
-Korrespondenz-E-Mail","Firstname Lastname, <br>
-                                                            Institution, <br>
-                                                            Adressline 1, <br>
-                                                            Adressline 2, <br>
-                                                            correspondence email"
+77,NA,"<strong>GESIS – Leibniz-Institut für Sozialwissenschaften in Köln Gereonstraße</strong>, <br><br>
+<strong>Ansprechperson:</strong> Julian Kohne (Abteilung Computational Social Science, Team Designed Digital Data), <br><br>
+Hausanschrift: <br>
+Gereonstraße 34-36 <br>
+50670 Köln <br>
+Tel.: 0221/47694-0 <br>
+Fax: 0221/47694-199 <br> <br>
+Die generellen Datenschutzinformationen des Instituts finden Sie hier: <a href=""https://www.gesis.org/institut/datenschutz"">https://www.gesis.org/institut/datenschutz</a>","<strong>GESIS - Leibniz Institute for the Social Sciences in Cologne Gereonstraße </strong> <br> <br>
+<strong>Contact person:</strong> Julian Kohne (Department Computational Social Science, Team Designed Digital Data), <br> <br>
+House address: <br>
+Gereonstraße 34-36 <br>
+50670 Cologne  <br>
+Phone: 0221/47694-0 <br>
+Fax: 0221/47694-199 <br>
+<br><br>
+The Institute's general data protection information can be found here:
+<a href=""https://www.gesis.org/institut/datenschutz"">https://www.gesis.org/institut/datenschutz</a>
+"
 78,NA,Bitte wählen Sie mindestens 2 Spalten aus,Please select at least 2 columns
 79,NA,Für die tabellarische Ansicht müssen mindestens 2 Spalten ausgewählt sein. Ihre Spaltenauswahl wurde zurückgesetzt,"For the tabular view, at least 2 columns must be selected. Your column selection has been reset"
 80,NA,Zustimmen,Confirm
