@@ -1,6 +1,6 @@
 ,Script_position,German,English
-1,NA,Ihre Daten werden anonymisiert und vorverarbeitet. Dies kann bis zu 2 Minuten in Anspruch nehmen. Bitte schließen Sie dieses Browserfenster nicht.,Your data will be anonymized and pre-processed. This process may take up to 2 minutes. Please do not close this browser window.
-2,NA,Ihre persönliche Datenauswertung wird vorbereitet. Dies kann einige Minuten in Anspruch nehmen. Bitte schließen Sie dieses Browserfenster nicht.,Your personal data analysis is being prepared. This process may take several minutes. Please do not close this browser window.
+1,NA,Ihre Daten werden anonymisiert und vorverarbeitet. \n Dies kann bis zu 2 Minuten in Anspruch nehmen.  \n Bitte schließen Sie dieses Browserfenster nicht.,Your data will be anonymized and pre-processed.  \n This process may take up to 2 minutes.  \n Please do not close this browser window.
+2,NA,Ihre persönliche Datenauswertung wird vorbereitet.  \n Dies kann einige Minuten in Anspruch nehmen.  \n Bitte schließen Sie dieses Browserfenster nicht.,Your personal data analysis is being prepared.  \n This process may take several minutes.  \n Please do not close this browser window.
 3,NA,Überblick,Overview
 4,NA,<h1 align='center'> Analysieren Sie ihre eigenen WhatsApp chat logs! </h1>,<h1 align='center'> Analyze Your Own WhatsApp Chat Logs! </h1>
 5,NA,"Liebe/r Teilnehmer/in, in diesem Teil der Studie haben Sie die Möglichkeit, Ihre eigenen WhatsApp-Chatlogs sicher zu analysieren
@@ -117,6 +117,7 @@ You can set the senders, the minimum frequency of a smilie, and the timeframe fo
 75,NA,"Auf der rechten Seite sehen Sie, wie lange es dauert, bis jeder Person in Ihrem Chat geantwortet wird oder wie lange es dauert, bis diese auf eine Nachricht antwortet. In diesem
                                                                              Panel können Sie die Einstellungen für die Grafik auf der rechten Seite anpassen.Sie können die Absender, die Mindestanzahl und den Zeitrahmen, der in die Analyse einbezogen werden soll, festlegen.","On the right-hand side, you can see how long it takes for each person in your chat to respond or how long it takes for them to reply to a message. You can set the senders and the timeframe for the analysis."
 76,NA,Impressum,Impressum
+
 77,NA,"<strong>GESIS – Leibniz-Institut für Sozialwissenschaften in Köln Gereonstraße</strong>, <br><br>
 <strong>Ansprechperson:</strong> Julian Kohne (Abteilung Computational Social Science, Team Designed Digital Data), <br><br>
 Hausanschrift: <br>
