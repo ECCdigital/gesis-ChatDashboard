@@ -74,35 +74,35 @@ options(shiny.maxRequestSize = 50*1024^2)
 # Set column names to be displayed to participants. This needs to be exactly 19 strings
 # and does not determine whether these variables are displayed or not, but just how they are named
 # in the display to participants
-Colnames_ppt_display <- c("Timestamp",
-                          "Sender",
-                          "Sender_anonymized",
-                          "Message",
-                          "Message_simplified",
-                          "Message_words",
+Colnames_ppt_display <- c("Zeit",
+                          "Absender",
+                          "Absender_anonym",
+                          "Nachricht",
+                          "Nachricht_vereinfacht",
+                          "Worte",
                           "Links",
-                          "Links_anonymized",
-                          "Media",
-                          "Media_anonymized",
-                          "Locations",
-                          "Locations_anonymized",
+                          "Links_anonym",
+                          "Medien",
+                          "Medien_anonym",
+                          "Standorte",
+                          "Standorte_anonym",
                           "Emoji",
-                          "Emoji_description",
+                          "Emoji_beschreibung",
                           "Smilies",
-                          "System_messages",
-                          "Word_count",
-                          "Time_order",
-                          "Display_order")
+                          "System_info",
+                          "Wortanzahl",
+                          "Nummerierung_zeit",
+                          "Nummerierung_anzeige")
 
 # Set column names to be automatically excluded because they can contain PII (must occur in Colnames_ppt_display)
-Colnames_exclude_pii <- c("Sender",
-                          "Message",
-                          "Message_simplified",
-                          "Message_words",
+Colnames_exclude_pii <- c("Absender",
+                          "Nachricht",
+                          "Nachricht_vereinfacht",
+                          "Worte",
                           "Links",
-                          "Media",
-                          "Locations",
-                          "System_messages")
+                          "Medien",
+                          "Standorte",
+                          "System_info")
 
 
 
@@ -349,35 +349,35 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                                  width = 6, offset = 3),
                                           
                                           # Images
-                                          column(slickROutput("slickr",
-                                                              width = "100%",
-                                                              height = "100%"),
-                                                 HTML("<br><br>"),
-                                                 width = 6, offset = 3),
+                                          #column(slickROutput("slickr",
+                                          #                    width = "100%",
+                                          #                    height = "100%"),
+                                          #       HTML("<br><br>"),
+                                          #       width = 6, offset = 3),
                                           
                                           # Heading 2
-                                          column(tags$p(style = "text-align: justify;",
-                                                        HTML(display_text[8]),
-                                                        HTML(display_text[9]),
-                                                        HTML("<br><br>")
-                                          ),
-                                          width = 6, offset = 3),
+                                          #column(tags$p(style = "text-align: justify;",
+                                          #              HTML(display_text[8]),
+                                          #              HTML(display_text[9]),
+                                          #              HTML("<br><br>")
+                                          #),
+                                          #width = 6, offset = 3),
                                           
                                           # Heading 3
-                                          column(tags$p(style = "text-align: justify;",
-                                                        HTML(display_text[10]),
-                                                        HTML(display_text[11]),
-                                                        HTML("<br><br>")
-                                          ),
-                                          width = 6, offset = 3),
+                                          #column(tags$p(style = "text-align: justify;",
+                                          #              HTML(display_text[10]),
+                                          #              HTML(display_text[11]),
+                                          #              HTML("<br><br>")
+                                          #),
+                                          #width = 6, offset = 3),
                                           
                                           # Heading 4
-                                          column(tags$p(style = "text-align: justify;",
-                                                        HTML(display_text[12]),
-                                                        HTML(display_text[13]),
-                                                        HTML("<br><br>")
-                                          ),
-                                          width = 6, offset = 3),
+                                          #column(tags$p(style = "text-align: justify;",
+                                          #              HTML(display_text[12]),
+                                          #              HTML(display_text[13]),
+                                          #              HTML("<br><br>")
+                                          #),
+                                          #width = 6, offset = 3),
                                           
                                           # Consent button
                                           column(12, align = "center",
@@ -426,17 +426,17 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                               tags$p(
                                                 
                                                 # Headline
-                                                HTML(display_text[22]),
+                                                #HTML(display_text[22]),
                                                 
                                                 # Text column
-                                                tags$p(style = "text-align: justify;",
-                                                       HTML(display_text[23]),
-                                                       HTML("<br><br>"),
-                                                       HTML(display_text[24]),
-                                                       HTML("<br><br>"),
-                                                       HTML(display_text[25]),
-                                                       HTML("<br><br>")
-                                                ),
+                                                #tags$p(style = "text-align: justify;",
+                                                #       HTML(display_text[23]),
+                                                #       HTML("<br><br>"),
+                                                #       HTML(display_text[24]),
+                                                #       HTML("<br><br>"),
+                                                #       HTML(display_text[25]),
+                                                #       HTML("<br><br>")
+                                                #),
                                                 
                                                 # Images and Headlines
                                                 HTML(display_text[26]),
@@ -523,10 +523,10 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                         sidebarPanel(
                                           
                                           # Info text
-                                          h2(display_text[29], align = "center"),
-                                          HTML(display_text[30]),
-                                          HTML("<br><br>"),
-                                          HTML(display_text[31]),
+                                          #h2(display_text[29], align = "center"),
+                                          #HTML(display_text[30]),
+                                          #HTML("<br><br>"),
+                                          #HTML(display_text[31]),
                                           
                                           # column selection
                                           h3(display_text[32]),
@@ -535,8 +535,12 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                                       display_text[34],
                                                       choices = c(""),
                                                       selected = c(""),
-                                                      label = display_text[35],
+                                                      #label = display_text[35],
                                                       multiple = TRUE,
+                                                      options  = pickerOptions(
+                                                        selectedTextFormat = "count",
+                                                        countSelectedText  = "{0} Spalten ausgewählt"
+                                                      ),
                                                       choicesOpt = list(style = c("color:black;font-weight: bold;",
                                                                                   "background:lightgrey;color:black",
                                                                                   "color:black;font-weight: bold;",
@@ -1456,13 +1460,14 @@ server <- function(input, output, session) {
         rv$copy2 <- rv$copy2[,!(colnames(rv$copy2) %in% Colnames_exclude_pii)]
         
         # popup for auto-removal of columns
-        shinyalert(display_text[85],
-                   type = "error",
-                   text = paste(paste(Colnames_exclude_pii, collapse = ", "), display_text[86]),
-                   showConfirmButton = TRUE,
-                   confirmButtonText = "OK",
-                   closeOnEsc = FALSE,
-                   closeOnClickOutside = FALSE)
+        # # removed for GESIS-study as this is covered in other texts
+        #shinyalert(display_text[85],
+        #           type = "error",
+        #           text = paste(paste(Colnames_exclude_pii, collapse = ", "), display_text[86]),
+        #           showConfirmButton = TRUE,
+        #           confirmButtonText = "OK",
+        #           closeOnEsc = FALSE,
+        #           closeOnClickOutside = FALSE)
         
         
       } else {
@@ -1514,18 +1519,41 @@ server <- function(input, output, session) {
       rv$copy2 <- NULL
       rv$copy2_encrypted <- NULL
       
+      # waiter
+      waiter_hide()
       
       # routing to results tab and hiding explore data tab
-      showTab("ChatDashboard",display_text[46],session = session)
-      hideTab("ChatDashboard",display_text[28],session = session)
-      updateNavbarPage(session, "ChatDashboard",display_text[46])
-      session$sendCustomMessage(
-        "microNavVisible",
-        list(show = c(display_text[46], display_text[76]), active = display_text[46])
+      #showTab("ChatDashboard",display_text[46],session = session)
+      #hideTab("ChatDashboard",display_text[28],session = session)
+      #updateNavbarPage(session, "ChatDashboard",display_text[46])
+      #session$sendCustomMessage(
+      #  "microNavVisible",
+      #  list(show = c(display_text[46], display_text[76]), active = display_text[46])
+      #)
+      
+      # NEW: Success popup
+      shinyalert(
+        title = "Spende erfolgreich!", # Or use a display_text variable
+        text = "Vielen Dank. Ihre anonymisierte Datenspende wurde sicher übermittelt. Auf der nächsten Seite sehen Sie einige Statistiken zu Ihrem Chatverhalten als zusätzliches Dankeschön für Ihre Teilnahme. Diese sind nur für Sie einsehbar und werden mit Verlassen der Seite restlos gelöscht. Ihre übermittelte Datenspende beinhaltet in jedem Fall ausschließlich anonymisierte Daten.",
+        type = "success",
+        showConfirmButton = TRUE,
+        confirmButtonText = "Weiter",
+        callbackR = function(x) {
+          if (x) {
+            # This code runs AFTER the user clicks "Weiter"
+            showTab("ChatDashboard",display_text[46],session = session)
+            hideTab("ChatDashboard",display_text[28],session = session)
+            updateNavbarPage(session, "ChatDashboard",display_text[46])
+            session$sendCustomMessage(
+              "microNavVisible",
+              list(show = c(display_text[46], display_text[76]), active = display_text[46])
+            )
+          }
+        }
       )
       
       # waiter
-      waiter_hide()
+      #waiter_hide()
       
     }
     
