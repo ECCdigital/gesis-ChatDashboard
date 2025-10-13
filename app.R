@@ -162,6 +162,29 @@ waiting_screen2 <- tagList(
 # Define UI for ChatDashboard application
 app_ui <- fluidPage(theme = shinytheme("flatly"),
                     
+                    # website zoom
+                    tags$head(tags$style(HTML("
+                    /* Shinywaiter immer bildschirmfüllend, in allen Browsern */
+                    .waiter-overlay, #waiter-overlay, .waiter {
+                      position: fixed !important;
+                      top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
+                      width: 100vw !important;
+                      height: 100vh !important;
+                      max-width: 100vw !important;
+                      max-height: 100vh !important;
+                      transform: none !important;
+                      -webkit-transform: none !important;
+                      -ms-transform: none !important;
+                      -moz-transform: none !important;
+                      z-index: 2147483647 !important;
+                    }
+                  
+                    /* Moderne Browser: exakte Viewport-Höhe */
+                    @supports (height: 100dvh) {
+                      .waiter-overlay, #waiter-overlay, .waiter { height: 100dvh !important; }
+                    }
+                  "))),
+                                        
                     tags$head(
                   HTML(sprintf("
                     <!-- etracker code 6.0 -->
@@ -420,43 +443,69 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                                                     style = "color: #FFFFFF; background-color: #E2007A; border-color: #E2007A")
                                           ),
                                           
-                                          # Main panel
+                                         
+                                          #### MAIN PANEL 
                                           mainPanel(
                                             column(
-                                              tags$p(
-                                                
-                                                # Headline
-                                                #HTML(display_text[22]),
-                                                
-                                                # Text column
-                                                #tags$p(style = "text-align: justify;",
-                                                #       HTML(display_text[23]),
-                                                #       HTML("<br><br>"),
-                                                #       HTML(display_text[24]),
-                                                #       HTML("<br><br>"),
-                                                #       HTML(display_text[25]),
-                                                #       HTML("<br><br>")
-                                                #),
-                                                
-                                                # Images and Headlines
-                                                HTML(display_text[26]),
-                                                tags$img(height = "auto",
-                                                         width = "100%",
-                                                         src = "DataExport_Guide_Android.png"),
-                                                HTML("<br><br>"),
-                                                HTML(display_text[27]),
-                                                tags$img(height = "auto",
-                                                         width = "100%",
-                                                         src = "WhatsApp_DataExport_iOS.png"),
-                                                HTML("<br><br>"),
-                                                
-                                                # End paragraph
+                                              width = 10, offset = 1,
+                                              
+                                              # Heading + body text
+                                              tags$h2("WhatsApp Chatverläufe exportieren"),
+                                              tags$p("Klicken sie auf den entsprechenden Reiter unten um die richtige Anleitung zum Export von WhatsApp Chatverläufen für Ihr Telefon auszuwählen"),
+                                              
+                                              # minimal spacing
+                                              tags$head(
+                                                tags$style(HTML("
+                                                  details { margin-bottom: 16px; }
+                                                  summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+                                                  details > *:not(summary) { margin-top: 8px; }
+                                                  img { display:block; }
+                                                "))
                                               ),
                                               
-                                              # end column
-                                              width = 10, offset = 1)
-                                            
-                                            # end main panel
+                                              # ANDROID
+                                              tags$details(
+                                                tags$summary("Android"),
+                                                tags$ul(
+                                                  tags$li("Öffnen Sie WhatsApp auf Ihrem Smartphone und klicken Sie auf den Chat dessen Verlauf Sie bereitstellen möchten."),
+                                                  tags$li("Klicken Sie oben rechts im Chat auf die drei vertikalen Punkte."),
+                                                  tags$li("Wählen Sie die Option `Mehr` im folgenden Menü aus."),
+                                                  tags$li("Klicken Sie auf die Option `Chat exportieren`."),
+                                                  tags$li("Im folgenden Fenster, wählen Sie die Option `Ohne Medien` aus."),
+                                                  tags$li("Wählen Sie nun ein Emailprogramm aus der Liste aus. Es öffnet sich eine Email an welche der Chatverlauf automatisch angehängt ist."),
+                                                  tags$li("Geben Sie in das Feld 'An' Ihre eigene Emailadresse ein und senden Sie die Email an sich selbst ab.")
+                                                ),
+                                                tags$img(src = "DataExport_Guide_Android.png",
+                                                         style = "width:100%;height:auto;", alt = "Android export guide"),
+                                                tags$ul(
+                                                  tags$li("Öffnen Sie das Emailpostfach an welches Sie den Chatverlauf gerade geschickt haben."),
+                                                  tags$li("Laden Sie den Anhang der Email herunter. Dies kann entweder eine .zip Datei oder eine .txt Datei sein."),
+                                                  tags$li("Laden Sie den heruntergeladenen Chatverlauf im Fenster links auf diese Website hoch."),
+                                                  tags$li("Auf der nächsten Seite erhalten Sie die Möglichkeit Ihren anonymisierten Chatverlauf nochmal einzusehen und anschließend abzuschicken.")
+                                                )
+                                              ),
+                                              
+                                              # iPHONE
+                                              tags$details(
+                                                tags$summary("iPhone"),
+                                                tags$ul(
+                                                  tags$li("Öffnen Sie WhatsApp auf Ihrem Smartphone und klicken Sie auf den Chat dessen Verlauf Sie bereitstellen möchten."),
+                                                  tags$li("Klicken Sie oben in der Mitte des Chatfensters auf den Namen Ihres Chatpartners."),
+                                                  tags$li("Scrollen Sie im Menü nach unten und wählen Sie die Option `Chat exportieren` aus"),
+                                                  tags$li("Im folgenden Fenster, wählen Sie die Option `Ohne Medien` aus."),
+                                                  tags$li("Wählen Sie nun ein Emailprogramm aus er Liste aus. Es öffnet sich eine Email an welche der Chatverlauf automatisch angehängt ist."),
+                                                  tags$li("Geben Sie in das Feld 'An' Ihre eigene Emailadresse ein und senden Sie die Email an sich selbst ab.")
+                                                ),
+                                                tags$img(src = "WhatsApp_DataExport_iOS.png",
+                                                         style = "width:100%;height:auto;", alt = "iOS export guide"),
+                                                tags$ul(
+                                                  tags$li("Öffnen Sie das Emailpostfach an welches Sie den Chatverlauf gerade geschickt haben."),
+                                                  tags$li("Laden Sie den Anhang der Email herunter. Dies kann entweder eine .zip Datei oder eine .txt Datei sein."),
+                                                  tags$li("Laden Sie den heruntergeladenen Chatverlauf im Fenster links auf diese Website hoch."),
+                                                  tags$li("Auf der nächsten Seite erhalten Sie die Möglichkeit Ihren anonymisierten Chatverlauf nochmal einzusehen und anschließend abzuschicken.")
+                                                )
+                                              )
+                                            )
                                           ),
                                           
                                           # End sidebar layout
@@ -967,7 +1016,6 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                     # Add GESIs footer
                     tags$footer(includeHTML("www/gesis-footer.html"))
                     
-                    
                     # End ui
 )
 
@@ -981,56 +1029,55 @@ ui <- shinymanager::secure_app(
   head_auth = tagList(
     tags$link(rel = "stylesheet", href = "package/dist/gesis-web.css"),
     tags$style(HTML("
-      :root{
-        --header-h:64px;
-        --banner-h:180px;
-        --gap-top:0px;      /* space between banner and login */
-        --footer-gap:0px;    /* whitespace before footer (less relevant for fixed) */
-        --footer-h:100px;    /* ESTIMATED HEIGHT OF THE FOOTER */
-      }
+  :root{
+    --header-h:64px;
+    --banner-h:180px;
+    --gap-top:0px;
+  }
 
-      /* fixed micro header */
-      #gesis-micro-header{ position:fixed; top:0; left:0; right:0; z-index:1030; }
+  /* Fixed micro header */
+  #gesis-micro-header{ position:fixed; top:0; left:0; right:0; z-index:1030; }
 
-      /* full-width banner background */
-      .panel-auth::before{
-        content:''; position:fixed; top:var(--header-h); left:0; right:0; height:var(--banner-h);
-        background:url('banner-microsite-07.svg') center/cover no-repeat; z-index:1020;
-      }
+  /* Full-width banner behind login */
+  .panel-auth::before{
+    content:''; position:fixed; top:var(--header-h); left:0; right:0; height:var(--banner-h);
+    background:url('banner-microsite-07.svg') center/cover no-repeat; z-index:1020;
+  }
 
-      /* space for header + banner + fixed footer clearance for the login panel */
-      .panel-auth{
-        padding-top:calc(var(--header-h) + var(--banner-h) + var(--gap-top)) !important;
-        /* UPDATED: Add padding to ensure content clears the fixed footer */
-        padding-bottom:calc(var(--footer-h) + 20px) !important; 
-        box-sizing:border-box;
-      }
+  /* Auth wrapper spacing */
+  .panel-auth{
+    padding-top:calc(var(--header-h) + var(--banner-h) + var(--gap-top)) !important;
+    box-sizing:border-box;
+    min-height:100dvh;
+  }
 
-      /* banner title/logo overlay from HTML */
-      #banner-overlay{ position:fixed; top:var(--header-h); left:0; right:0; height:var(--banner-h); z-index:1025; pointer-events:none; }
-      #banner-overlay .page-banner.microsite,
-      #banner-overlay .page-banner--inner{ background:transparent !important; margin:0 !important; }
+  /* Keep login card constrained and centered */
+  .panel-auth > .panel,
+  .panel-auth .panel.panel-default,
+  .panel-auth .auth-panel{
+    width:min(560px, 100%);
+    margin:0 auto;
+  }
 
-      /* UPDATED: Footer is now fixed to the bottom of the viewport, full-bleed */
-      html,body{ height:100%; overflow-x:hidden; }
-      .page-footer{
-        position:fixed !important;
-        bottom:-105px; /* NEW: Fix to the bottom */
-        left:0; right:0; /* NEW: Full-bleed width */
-        width:100vw; 
-        /* The margins below are unnecessary for full-bleed with left/right:0 and should be removed,
-           but I've kept a simplified width fix just in case it's needed elsewhere. */
-        margin-left:auto; 
-        margin-right:auto;
-        z-index:1030; /* Ensure it is above main content */
-        margin-top:var(--footer-gap); /* This margin is less relevant for a fixed element */
-      }
+  /* Banner title/logo overlay */
+  #banner-overlay{ position:fixed; top:var(--header-h); left:0; right:0; height:var(--banner-h); z-index:1025; pointer-events:none; }
+  #banner-overlay .page-banner.microsite,
+  #banner-overlay .page-banner--inner{ background:transparent !important; margin:0 !important; }
 
-      @media (max-width:768px){
-        /* Adjust variables for mobile */
-        :root{ --banner-h:140px; --gap-top:40px; --footer-gap:96px; --footer-h:140px; }
-      }
-    "))
+  html,body{ height:100%; overflow-x:hidden; }
+
+  /* Disable footer on shinymanager login page */
+  .page-footer{ display:none !important; }
+
+  @media (max-width:768px){
+    :root{ --banner-h:140px; --gap-top:40px; }
+  }
+"))
+    
+    
+
+    
+    
   ),
   
   tags_top = tagList(
@@ -1431,7 +1478,7 @@ server <- function(input, output, session) {
     
     # popup asking for consent to data donation
     shinyalert(display_text[81],
-               display_text[81],
+               "Ausgegraute Spalten werden automatisch von der Spende entfernt.",
                type = "success",
                showConfirmButton = TRUE,
                showCancelButton = TRUE,
@@ -1534,7 +1581,7 @@ server <- function(input, output, session) {
       # NEW: Success popup
       shinyalert(
         title = "Spende erfolgreich!", # Or use a display_text variable
-        text = "Vielen Dank. Ihre anonymisierte Datenspende wurde sicher übermittelt. Auf der nächsten Seite sehen Sie einige Statistiken zu Ihrem Chatverhalten als zusätzliches Dankeschön für Ihre Teilnahme. Diese sind nur für Sie einsehbar und werden mit Verlassen der Seite restlos gelöscht. Ihre übermittelte Datenspende beinhaltet in jedem Fall ausschließlich anonymisierte Daten.",
+        text = "Vielen Dank! Ihre anonymisierte Datenspende wurde sicher übermittelt. \n\n Auf der nächsten Seite sehen Sie einige Statistiken zu Ihrem Chatverhalten als zusätzliches Dankeschön für Ihre Teilnahme. Diese sind nur für Sie einsehbar und werden mit Verlassen der Seite restlos gelöscht. \n\n Sie können diese Website nun jederzeit schließen.",
         type = "success",
         showConfirmButton = TRUE,
         confirmButtonText = "Weiter",
@@ -1712,7 +1759,7 @@ server <- function(input, output, session) {
         names     = input$Sender_input_msg,
         starttime = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[2], " 23:59", sep = "")
-      ) + labs(title = "Nachrichten im Zeitverlauf", x = "Datum", y = "Nachrichten")
+      ) + labs(title = "Nachrichtenanzahl", x = "Absender", y = "Nachrichten")
     }, res = 100, height = 600)
     
     output$tokensbwah1 <- renderPlot({
@@ -1734,7 +1781,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         plot      = "heatmap"
-      ) + labs(title = "Wörter – Aktivität nach Tageszeit", x = "Datum", y = "Stunde", fill = "Wörter")
+      ) + labs(title = "Wörter – Aktivität nach Tageszeit", x = "Uhrzeit", y = "Wochentag", fill = "Wörter")
     }, res = 100, height = 600)
   })
   
@@ -1762,7 +1809,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$LinkMinimum
-      ) + labs(title = "Links – Aktivität nach Tageszeit", x = "Datum", y = "Stunde", fill = "Links")
+      ) + labs(title = "Links – Aktivität nach Tageszeit", x = "Uhrzeit", y = "Wochentag", fill = "Links")
     }, res = 100, height = 600)
     
     output$links4 <- renderPlot({
@@ -1774,7 +1821,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$LinkMinimum
-      ) + labs(title = "Häufigste Domains", x = "Domäne", y = "Anzahl")
+      ) + labs(title = "Häufigste Domains", x = "Absender", y = "Häufigkeit")
     }, res = 100, height = 600)
   })
   
@@ -1802,7 +1849,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$SmilieMinimum
-      ) + labs(title = "Smilies – Aktivität nach Tageszeit", x = "Datum", y = "Stunde", fill = "Smilies")
+      ) + labs(title = "Smilies – Aktivität nach Tageszeit", x = "Uhrzeit", y = "Wochentag", fill = "Smilies")
     }, res = 100, height = 600)
     
     output$smilies4 <- renderPlot({
@@ -1814,7 +1861,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$SmilieMinimum
-      ) + labs(title = "Smilies nach Sender", x = "Sender", y = "Anzahl")
+      ) + labs(title = "Smilies nach Sender", x = "Absender", y = "Anzahl")
     }, res = 100, height = 600)
   })
   
@@ -1842,7 +1889,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$EmojiMinimum
-      ) + labs(title = "Emoji – Aktivität nach Tageszeit", x = "Datum", y = "Stunde", fill = "Emoji")
+      ) + labs(title = "Emoji – Aktivität nach Tageszeit", x = "Uhrzeit", y = "Wochentag", fill = "Emoji")
     }, res = 100, height = 600)
     
     output$emoji4 <- renderPlot({
@@ -1854,7 +1901,7 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$EmojiMinimum
-      ) + labs(title = "Emoji nach Sender", x = "Sender", y = "Anzahl")
+      ) + labs(title = "Emoji nach Sender", x = "Absender", y = "Häufigkeit")
     }, res = 100, height = 600)
   })
   
