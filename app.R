@@ -30,7 +30,8 @@ library(WhatsR)
 
 # language setting for shinymanager authentication page
 # see: https://datastorm-open.github.io/shinymanager/reference/use_language.html
-landing_page_language <- "de"
+
+landing_page_language <- Sys.getenv("LANGUAGE", unset = "en")
 
 # Check: https://cdn.datatables.net/plug-ins/1.10.11/i18n/ for a 
 # list of different languages. Insert them by pasting the respective
@@ -59,13 +60,13 @@ consent_message <- NA
 # variable to control whether to use forwarding per url parameter or rely on pre-defined credentials for authentication
 # TODO: If you are using url parameter forwarding, you need to adapt line 879 to extract the participant ID from your referral link.
 # Default structure is: www.example-website.com/ChatDashboard?id=TestParticipant | Extracts: TestParticipant
-use_forwarding <- TRUE 
+use_forwarding <- Sys.getenv("USE_FORWARDING", unset = FALSE)
 
 # Password to use for forwarding via url-parameter (only used if use_forwarding == TRUE)
 # TODO: Set this as a character string in line 880
 
 # saving donated files to server if TRUE, will not save any data if not TRUE
-save_to_server <- TRUE
+save_to_server <- Sys.getenv("SAVE_TO_SERVER", unset = FALSE)
 
 # setting upload file size limit
 options(shiny.maxRequestSize = 50*1024^2)
@@ -107,8 +108,8 @@ Colnames_exclude_pii <- c("Absender",
 
 
 # Shiny Debugging Options (uncomment these to debug the app)
-# options(shiny.error = browser)
-# options(shiny.trace = TRUE)
+options(shiny.error = browser)
+options(shiny.trace = TRUE)
 
 
 
@@ -117,8 +118,8 @@ Colnames_exclude_pii <- c("Absender",
 ################################### HANDLING SHINY MANAGER CREDENTILAS ####
 
 # Switch for running local (FALSE) vs online (TRUE)
-running_online = FALSE
-if (running_online == TRUE) {.libPaths("YOUR-LIB-PATH-HERE")}
+running_online <- Sys.getenv("RUNNING_ONLINE", unset = FALSE)
+if (running_online == TRUE) {.libPaths(Sys.getenv("R_LIBS_USER"))}
 # TODO: Add library path of server here if running online
 
 # loading credentials from external file
@@ -184,6 +185,29 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                     }
                   "))),
                                         
+                    tags$head(
+                  HTML(sprintf("
+                    <!-- etracker code 6.0 -->
+                    <script type='text/javascript'>
+                       var et_pagename = '%s';
+                       var et_areas    = '%s';
+                    </script>
+                    <script id='_etLoader'
+                            type='text/javascript'
+                            charset='UTF-8'
+                            data-block-cookies='true'
+                            data-secure-code='%s'
+                            src='//code.etracker.com/code/e.js'
+                            async>
+                    </script>
+                    <!-- etracker code 6.0 end -->
+                    ",
+                     Sys.getenv('ET_PAGENAME'),
+                     Sys.getenv('ET_AREAS'),
+                     Sys.getenv('ET_SECURE_CODE')
+                  ))
+                ),
+                    
                     ##################################### UI SETUP ####
                     
                     # Shiny helpers
@@ -1204,6 +1228,11 @@ server <- function(input, output, session) {
   
   # authentication either with url parameter forwarding or with preset credentials
   if (use_forwarding == TRUE) {
+
+    observe({
+      participant_id <- unlist(strsplit(strsplit(session$clientData$url_search, "&")[[1]][1], "="))[2]
+      print(paste("Extracted participant ID:", participant_id))
+    })
     
     # using manually set password for forwarding
     res_auth <- secure_server(
@@ -1214,7 +1243,7 @@ server <- function(input, output, session) {
                                                              # survey tool can be used as  valid usernames. This enables data linking.
                                                              # TODO: Might need to be adapted to the structure of the referral link.
                                                              c(parseQueryString(session$clientData$url_search)[["id"]],
-                                                               "password", # TODO: Set your forwarding password here
+                                                               Sys.getenv("FORWARDING_PASSWORD", unset = "password"), # TODO: Set your forwarding password here
                                                                "2019-04-15",
                                                                NA,
                                                                FALSE,
