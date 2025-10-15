@@ -32,7 +32,7 @@ library(shinybrowser)
 # language setting for shinymanager authentication page
 # see: https://datastorm-open.github.io/shinymanager/reference/use_language.html
 
-landing_page_language <- Sys.getenv("LANGUAGE", unset = "en")
+landing_page_language <- Sys.getenv("LANGUAGE", unset = "de")
 
 # Check: https://cdn.datatables.net/plug-ins/1.10.11/i18n/ for a 
 # list of different languages. Insert them by pasting the respective
