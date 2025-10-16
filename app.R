@@ -49,8 +49,30 @@ display_text <- ChatDashboard_DisplayText$German
 # ./www/ChatDashboard_DisplayText.csv, add an additional column, and select it above.
 
 
+###################################  ETRACKER ####
 
-
+et_tags <- tags$head(
+  HTML(sprintf("
+                    <!-- etracker code 6.0 -->
+                    <script type='text/javascript'>
+                       var et_pagename = '%s';
+                       var et_areas    = '%s';
+                    </script>
+                    <script id='_etLoader'
+                            type='text/javascript'
+                            charset='UTF-8'
+                            data-block-cookies='true'
+                            data-secure-code='%s'
+                            src='//code.etracker.com/code/e.js'
+                            async>
+                    </script>
+                    <!-- etracker code 6.0 end -->
+                    ",
+               Sys.getenv('ET_PAGENAME'),
+               Sys.getenv('ET_AREAS'),
+               Sys.getenv('ET_SECURE_CODE')
+  ))
+)
 
 ###################################  SHINY SETTINGS ####
 
@@ -163,6 +185,8 @@ waiting_screen2 <- tagList(
 
 # Define UI for ChatDashboard application
 app_ui <- fluidPage(theme = shinytheme("flatly"),
+
+                    et_tags,
                     
                     # Detecting browser for mobile optimization
                     shinybrowser::detect(),
@@ -214,29 +238,6 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                       .waiter-overlay, #waiter-overlay, .waiter { height: 100dvh !important; }
                     }
                   "))),
-                                        
-                    tags$head(
-                  HTML(sprintf("
-                    <!-- etracker code 6.0 -->
-                    <script type='text/javascript'>
-                       var et_pagename = '%s';
-                       var et_areas    = '%s';
-                    </script>
-                    <script id='_etLoader'
-                            type='text/javascript'
-                            charset='UTF-8'
-                            data-block-cookies='true'
-                            data-secure-code='%s'
-                            src='//code.etracker.com/code/e.js'
-                            async>
-                    </script>
-                    <!-- etracker code 6.0 end -->
-                    ",
-                     Sys.getenv('ET_PAGENAME'),
-                     Sys.getenv('ET_AREAS'),
-                     Sys.getenv('ET_SECURE_CODE')
-                  ))
-                ),
                     
                     ##################################### UI SETUP ####
                     
@@ -1058,6 +1059,7 @@ ui <- shinymanager::secure_app(
   language = landing_page_language,
   
   head_auth = tagList(
+    et_tags,
     tags$link(rel = "stylesheet", href = "package/dist/gesis-web.css"),
     tags$style(HTML("
   :root{
