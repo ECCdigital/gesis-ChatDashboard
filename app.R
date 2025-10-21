@@ -131,17 +131,35 @@ Colnames_exclude_pii <- c("Absender",
 
 
 # Shiny Debugging Options (uncomment these to debug the app)
-options(shiny.session.inactivityTimeout = 2*60*60*1000) # Session Inactivity Timeout =
+options(shiny.session.inactivityTimeout = 2*60*60*1000) # Session Inactivity Timeout
 # options(shiny.error = browser)
 # options(shiny.trace = TRUE)
 
-
-
+# --- per-user CSV logger (append-only, no IP/path) ---
+log_event <- function(event, session) {
+  user <- parseQueryString(session$clientData$url_search)[["id"]]
+  if (is.null(user) || user == "") user <- "unknown_user"
+  log_path <- file.path("ClosingReasons", paste0("usage_log_", user, ".csv"))
+  dir.create(dirname(log_path), showWarnings = FALSE, recursive = TRUE)
+  
+  row <- data.frame(
+    timestamp_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+    event   = event,
+    username = user,
+    device  = shinybrowser::get_device(),
+    browser = shinybrowser::get_browser(),
+    stringsAsFactors = FALSE
+  )
+  
+  write.table(row, file = log_path, sep = ",", row.names = FALSE,
+              col.names = !file.exists(log_path), append = TRUE)
+}
 
 
 ################################### HANDLING SHINY MANAGER CREDENTILAS ####
 
 # Switch for running local (FALSE) vs online (TRUE)
+
 running_online <- Sys.getenv("RUNNING_ONLINE", unset = FALSE)
 if (running_online == TRUE) {.libPaths(Sys.getenv("R_LIBS_USER"))}
 # TODO: Add library path of server here if running online
@@ -399,8 +417,8 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                                  HTML(display_text[6]),
                                                  HTML("<br><br>"),
                                                  HTML(display_text[7]),
-                                                 HTML("<br><br><br>"),
-                                                 width = 6, offset = 3),
+                                                 HTML("<br>"),
+                                              
                                           
                                           # Images
                                           #column(slickROutput("slickr",
@@ -432,6 +450,19 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                           #              HTML("<br><br>")
                                           #),
                                           #width = 6, offset = 3),
+                                          
+                                          tags$head(
+                                            tags$style(HTML("
+                                                      .callout{padding:1rem;border-left:4px solid #0d6efd;background:#f8f9fa;border-radius:.25rem}
+                                                      .callout h4{margin-top:0;margin-bottom:.5rem}
+                                                    "))
+                                          ),
+                                          tags$div(class = "callout",
+                                                   tags$h4("Wichtig:"),
+                                                   "Diese Website ist für den PC optimiert. Sie können mit dem Smartphone fortfahren, sollten aber vermeiden den Tab zu schließen, zu minimieren oder das Display zu sperren bevor die Datenspende abgeschlossen ist um Verbindungsprobleme zu vermeiden."
+                                          ),
+                                          
+                                          HTML("<br><br>"), width = 6, offset = 3),
                                           
                                           # Consent button
                                           column(12, align = "center",
@@ -482,7 +513,7 @@ app_ui <- fluidPage(theme = shinytheme("flatly"),
                                               
                                               # Heading + body text
                                               tags$h2("WhatsApp Chatverläufe exportieren"),
-                                              tags$p("Klicken sie auf den entsprechenden Reiter unten um die richtige Anleitung zum Export von WhatsApp Chatverläufen für Ihr Telefon auszuwählen"),
+                                              tags$p("Wenn Sie den Chatverlauf bereits auf ihr Telefon oder Ihren PC exportiert haben können Sie diesen direkt links (PC) oder oben (Smartphone) hochladen. Falls nicht, klicken Sie hier auf den entsprechenden Reiter unten um die richtige Anleitung zum Export von WhatsApp Chatverläufen für Ihr Telefon auszuwählen."),
                                               
                                               # minimal spacing
                                               tags$head(
@@ -1285,7 +1316,7 @@ server <- function(input, output, session) {
                                                              # survey tool can be used as  valid usernames. This enables data linking.
                                                              # TODO: Might need to be adapted to the structure of the referral link.
                                                              c(parseQueryString(session$clientData$url_search)[["id"]],
-                                                               Sys.getenv("FORWARDING_PASSWORD", unset = "password"), # TODO: Set your forwarding password here
+                                                               Sys.getenv("FORWARDING_PASSWORD", unset = "7z9c72ud"), # TODO: Set your forwarding password here
                                                                "2019-04-15",
                                                                NA,
                                                                FALSE,
@@ -1301,6 +1332,14 @@ server <- function(input, output, session) {
     res_auth <- secure_server(check_credentials = check_credentials(credentials))
     
   }
+  
+  
+  # Logging Click timestamps
+  observeEvent(res_auth$user, { log_event("login", session) })
+  observeEvent(input$IntroCheck,    { log_event("IntroCheck_click", session) })
+  observeEvent(input$submit,        { log_event("upload_submit_click", session) })
+  observeEvent(input$person_submit, { log_event("person_submit_click", session) })
+  observeEvent(input$donation,      { log_event("donation_click", session) })
   
   
   
@@ -1632,6 +1671,7 @@ server <- function(input, output, session) {
       
       # NEW: Success popup
       shinyalert(
+        inputId = "donation_success_alert",
         title = "Spende erfolgreich!", # Or use a display_text variable
         text = "Vielen Dank! Ihre anonymisierte Datenspende wurde sicher übermittelt. \n\n Auf der nächsten Seite sehen Sie einige Statistiken zu Ihrem Chatverhalten als zusätzliches Dankeschön für Ihre Teilnahme. Diese sind nur für Sie einsehbar und werden mit Verlassen der Seite restlos gelöscht. \n\n Sie können diese Website nun jederzeit schließen.",
         type = "success",
@@ -1656,7 +1696,7 @@ server <- function(input, output, session) {
       
     }
     
-  } , ignoreInit = TRUE, once = TRUE)
+  } , ignoreInit = TRUE)
   
   
   
@@ -1993,5 +2033,4 @@ server <- function(input, output, session) {
 }
 
 ##################################### RUNNING APPLICATION ####
-options(shiny.host = "0.0.0.0", shiny.port = 3838)
 shinyApp(ui = ui, server = server)
