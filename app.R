@@ -1857,7 +1857,14 @@ server <- function(input, output, session) {
         names     = input$Sender_input_msg,
         starttime = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[2], " 23:59", sep = "")
-      ) + labs(title = "Nachrichtenanzahl", x = "Absender", y = "Nachrichten")
+      ) + labs(title = "Nachrichtenanzahl", x = "Absender", y = "Nachrichten") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 2, byrow = TRUE),
+          fill    = guide_legend(ncol = 2, byrow = TRUE),
+          linetype= guide_legend(ncol = 2, byrow = TRUE),
+          shape   = guide_legend(ncol = 2, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$tokensbwah1 <- renderPlot({
@@ -1868,7 +1875,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_messages, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         plot      = "cumsum"
-      ) + labs(title = "Wortanzahl (kumuliert)", x = "Datum", y = "Wörter (kumuliert)")
+      ) + labs(title = "Wortanzahl (kumuliert)", x = "Datum", y = "Wörter (kumuliert)") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 2, byrow = TRUE),
+          fill    = guide_legend(ncol = 2, byrow = TRUE),
+          linetype= guide_legend(ncol = 2, byrow = TRUE),
+          shape   = guide_legend(ncol = 2, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$tokensbwah2 <- renderPlot({
@@ -1895,7 +1909,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$LinkMinimum
-      ) + labs(title = "Geteilte Links (kumuliert)", x = "Datum", y = "Links (kumuliert)")
+      ) + labs(title = "Geteilte Links (kumuliert)", x = "Datum", y = "Links (kumuliert)") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$links2 <- renderPlot({
@@ -1919,7 +1940,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_links, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$LinkMinimum
-      ) + labs(title = "Häufigste Domains", x = "Absender", y = "Häufigkeit")
+      ) + labs(title = "Häufigste Domains", x = "Absender", y = "Häufigkeit") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 2, byrow = TRUE),
+          fill    = guide_legend(ncol = 2, byrow = TRUE),
+          linetype = guide_legend(ncol = 2, byrow = TRUE),
+          shape   = guide_legend(ncol = 2, byrow = TRUE)
+        )
     }, res = 100, height = 600)
   })
   
@@ -1935,7 +1963,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$SmilieMinimum
-      ) + labs(title = "Smilies (kumuliert)", x = "Datum", y = "Smilies (kumuliert)")
+      ) + labs(title = "Smilies (kumuliert)", x = "Datum", y = "Smilies (kumuliert)") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$smilies2 <- renderPlot({
@@ -1959,7 +1994,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_smilies, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$SmilieMinimum
-      ) + labs(title = "Smilies nach Sender", x = "Absender", y = "Anzahl")
+      ) + labs(title = "Smilies nach Sender", x = "Absender", y = "Anzahl") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
   })
   
@@ -1975,7 +2017,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$EmojiMinimum
-      ) + labs(title = "Emoji (kumuliert)", x = "Datum", y = "Emoji (kumuliert)")
+      ) + labs(title = "Emoji (kumuliert)", x = "Datum", y = "Emoji (kumuliert)") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$emoji2 <- renderPlot({
@@ -1999,7 +2048,14 @@ server <- function(input, output, session) {
         starttime = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_emoji, "%Y-%m-%d"), " "))[2], " 23:59", sep = ""),
         min_occur = input$EmojiMinimum
-      ) + labs(title = "Emoji nach Sender", x = "Absender", y = "Häufigkeit")
+      ) + labs(title = "Emoji nach Sender", x = "Absender", y = "Häufigkeit") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 2, byrow = TRUE),
+          fill    = guide_legend(ncol = 2, byrow = TRUE),
+          linetype = guide_legend(ncol = 2, byrow = TRUE),
+          shape   = guide_legend(ncol = 2, byrow = TRUE)
+        )
     }, res = 100, height = 600)
   })
   
@@ -2014,7 +2070,14 @@ server <- function(input, output, session) {
         names     = input$Sender_input_replies,
         starttime = paste(unlist(strsplit(format.Date(input$date_range_replies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_replies, "%Y-%m-%d"), " "))[2], " 23:59", sep = "")
-      ) + labs(title = "Antwortzeiten", x = "Minuten", y = "Log(Minuten) + 1")
+      ) + labs(title = "Antwortzeiten", x = "Minuten", y = "Log(Minuten) + 1") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
     
     output$replytime2 <- renderPlot({
@@ -2025,7 +2088,14 @@ server <- function(input, output, session) {
         names     = input$Sender_input_replies,
         starttime = paste(unlist(strsplit(format.Date(input$date_range_replies, "%Y-%m-%d"), " "))[1], " 00:00", sep = ""),
         endtime   = paste(unlist(strsplit(format.Date(input$date_range_replies, "%Y-%m-%d"), " "))[2], " 23:59", sep = "")
-      ) + labs(title = "Reaktionszeiten", x = "Minuten", y = "Log(Minuten) + 1")
+      ) + labs(title = "Reaktionszeiten", x = "Minuten", y = "Log(Minuten) + 1") +
+        theme(legend.position = "bottom", legend.box = "horizontal") +
+        guides(
+          color   = guide_legend(ncol = 3, byrow = TRUE),
+          fill    = guide_legend(ncol = 3, byrow = TRUE),
+          linetype = guide_legend(ncol = 3, byrow = TRUE),
+          shape   = guide_legend(ncol = 3, byrow = TRUE)
+        )
     }, res = 100, height = 600)
   })
   
@@ -2033,4 +2103,5 @@ server <- function(input, output, session) {
 }
 
 ##################################### RUNNING APPLICATION ####
+#options(shiny.host = "0.0.0.0", shiny.port = 3838) # Hosting for mobile testing via same network
 shinyApp(ui = ui, server = server)
